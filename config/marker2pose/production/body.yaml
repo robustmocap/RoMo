@@ -1,0 +1,83 @@
+NAME: Marker2Pose
+DEVICE: [ 0 ]
+CUDA: TRUE
+SEED: 1024
+TYPE: "marker2pose"
+DESCRIPTION: "Test for Marker2Pose"
+
+DATA:
+  root_dir: "/home/panxiaoyu/MoCap/Networks"
+
+  body_type: "production"
+  finger_type: "5"
+  train_part: "body"
+  test_part: "body"
+  window_size: 64
+  use_wrist: False
+  rot_repr: "mat_full"
+#  test_mem_sample_rate: 0.05
+#  train_mem_sample_rate: 0.05
+  test_mem_sample_rate: 1.0
+  train_mem_sample_rate: 1.0
+
+  h5_path: "DataSet/tencent_std_6_new.h5"
+  train_list_path: "Assets/full_body_training_set_PART512_WINDOW64_SEED1024.txt"
+  test_list_path: "Assets/full_body_testing_set_PART512_WINDOW64_SEED1024.txt"
+
+  connect_mat_path: "Assets/connect_mat/production_mat_std_3.npy"
+  marker_name_config_path: "Assets/marker_names.json"
+  body_joint_name_config_path: "Assets/joint_config_body.txt"
+  left_hand_joint_name_config_path: "Assets/joint_config_left_hand.txt"
+  right_hand_joint_name_config_path: "Assets/joint_config_right_hand.txt"
+
+  wrist_marker_pos_mean_std_path: ""
+  marker_pos_mean_std_path: "Assets/mean_std/production/body/fix_occlusion_marker_pos.npz"
+  joint_pos_mean_std_path: "Assets/mean_std/production/body/joint_pos.npz"
+  motion_mat_mean_std_path: "Assets/mean_std/production/body/motion_mat.npz"
+  motion_trans_mean_std_path: "Assets/mean_std/production/body/motion_trans.npz"
+  weight_mean_std_path: "Assets/mean_std/production/body/weights.npz"
+  joint_offset_mean_std_path: "Assets/mean_std/production/body/t_pose.npz"
+
+LOG:
+  save_dir: "../Logs"
+  checkpoint_dir: "checkpoints"
+  log_dir: "logs"
+  code_dir: "code"
+  res_dir: "res"
+  overwrite: True
+  save_code: True
+  tensorboard_port: 6008
+  no_code_dir_list: [ ]
+
+NETWORK:
+  type: "HeteroGraphModel"
+  network_dim: [ 0, 1024, 1024, 1024, 0 ]
+  marker_gcn_dim: [ 4, 8, 16 ]
+  marker_gcn_act: [ "Mish", "Mish", "Mish" ]
+  act_fun: [ "Mish", "ReLU", "ReLU", "ReLU" ]
+  skeleton_gcn_dim: [ 40, 20, 0 ]
+  skeleton_gcn_act: [ "Mish", "Mish", "Mish" ]
+  marker_skeleton_conv_gcn_dim: [ [ 16, 30 ], [ 30, 40 ], [ 40, 30 ] ]
+  marker_skeleton_conv_gcn_act: [ "Mish", "Mish", "Mish" ]
+
+
+TRAIN:
+  batch_size: 512
+  learning_rate: 1e-3
+  learning_rate_decay_step: 30
+  learning_rate_decay_rate: 0.3
+  epoch_num: 150
+  dropout: 0.2
+  resume_checkpoint: ""
+  log_interval: 10
+  save_interval: 50
+
+  motion_loss_weight: 4.0
+  joint_offset_loss_weight: 1.0
+  joint_pos_loss_weight: 0.02
+
+
+EVAL:
+  only_eval: False
+  export_res: False
+

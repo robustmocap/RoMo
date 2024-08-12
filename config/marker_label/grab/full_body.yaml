@@ -1,0 +1,103 @@
+NAME: MarkerLabel
+DEVICE: [ 0 ]
+CUDA: TRUE
+SEED: 100
+TYPE: "marker_label"
+DESCRIPTION: "Test for MarkerLabel"
+
+DATA:
+  root_dir: "."
+
+  body_type: "grab"
+  finger_type: "grab"
+
+  train_part: "full_body"
+  test_part: "full_body"
+
+  label_num: 85
+  window_size: 64
+  test_mem_sample_rate: 1.0
+  train_mem_sample_rate: 1.0
+  occlusion_rate: 0.0
+  #  test_mem_sample_rate: 0.05
+  #  train_mem_sample_rate: 0.05
+  scale: 1.0
+  global_transform_align: False
+  median_align: True
+  num_workers: 4
+  use_window: false
+
+  h5_path: "../Networks/DataSet/grab.h5"
+  train_list_path: "assets/grab_training_set.txt"
+  test_list_path: "assets/grab_testing_set.txt"
+
+  connect_mat_path: "assets/connect_mat/production_mat_std_3.npy"
+  marker_name_config_path: "assets/marker_names.json"
+  body_joint_name_config_path: "assets/joint_config_body.txt"
+  left_hand_joint_name_config_path: "assets/joint_config_left_hand.txt"
+  right_hand_joint_name_config_path: "assets/joint_config_right_hand.txt"
+  full_body_joint_name_config_path: "assets/joint_config_full_body.txt"
+
+
+LOG:
+  save_dir: "../Logs"
+  checkpoint_dir: "checkpoints"
+  log_dir: "logs"
+  code_dir: "code"
+  res_dir: "res"
+  overwrite: True
+  save_code: True
+  tensorboard_port: 6008
+  no_code_dir_list: [ ]
+
+NETWORK:
+  type: "PCT"
+
+  neighbor_marker_num: 4
+  attention_feat_dim: 125
+  attention_layer_num: 4
+  attention_head_num: 5
+  num_sinkhorn_iters: 20
+  skip_connection: true
+
+TRAIN:
+  batch_size: 1024
+  optimizer:
+    type: Adam
+    args:
+      lr: 1e-3
+      weight_decay: 0.00005
+      betas: [ .9, .999 ]
+  lr_scheduler:
+    type: ReduceLROnPlateau
+    args:
+      verbose: true
+      patience: 3
+  early_stopping:
+    monitor: val_total_loss
+    min_delta: 0.0
+    patience: 8
+    verbose: true
+    mode: min
+  epoch_num: 150
+  dropout: 0.2
+  resume_checkpoint: "checkpoints/labeling/full_body.ckpt"
+  log_interval: 10
+  save_interval: 50
+
+  part_loss_weight: 1
+  label_loss_weight: 1
+
+EVAL:
+  only_eval: True
+  export_attention: False
+  export_res: False
+  export_vicon: false
+  use_tracklet: false
+  tracklet:
+    pos_diff_threshold: 0.007
+    sim_diff_threshold: 0.1
+    sim_mat_lambda: 0.05
+    score_p: 2
+    score_q: 0
+

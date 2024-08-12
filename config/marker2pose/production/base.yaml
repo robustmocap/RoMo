@@ -1,0 +1,73 @@
+NAME: Marker2Pose_Base
+DEVICE: [ 0 ]
+CUDA: TRUE
+SEED: 1024
+TYPE: "marker2pose"
+DESCRIPTION: "Base config for Marker2Pose"
+
+DATA:
+  root_dir: "/home/panxiaoyu/MoCap/Networks"
+
+  body_type: "production"
+  finger_type: "5"
+  train_part: "body"
+  test_part: "body"
+  window_size: 64
+  use_wrist: False
+  rot_repr: "mat_full"
+  test_mem_sample_rate: 1.0
+  train_mem_sample_rate: 1.0
+
+  h5_path: ""
+  train_list_path: ""
+  test_list_path: ""
+
+  connect_mat_path: ""
+  marker_name_config_path: "Assets/marker_names.json"
+  body_joint_name_config_path: ""
+  left_hand_joint_name_config_path: ""
+  right_hand_joint_name_config_path: ""
+  full_body_joint_name_config_path: ""
+
+  wrist_marker_pos_mean_std_path: ""
+  marker_pos_mean_std_path: ""
+  joint_pos_mean_std_path: ""
+  motion_mean_std_path: ""
+  weight_mean_std_path: ""
+  joint_offset_mean_std_path: ""
+
+  cos_twist_mean_std_path: ""
+  sin_twist_mean_std_path: ""
+
+LOG:
+  save_dir: "../Logs"
+  checkpoint_dir: "checkpoints"
+  log_dir: "logs"
+  code_dir: "code"
+  res_dir: "res"
+  overwrite: True
+  save_code: True
+  tensorboard_port: 6008
+  no_code_dir_list: [ ]
+
+NETWORK:
+  type: "BASE_TYPE"
+
+
+TRAIN:
+  batch_size: 512
+  epoch_num: 500
+  dropout: 0.2
+  resume_checkpoint: ""
+  log_interval: 10
+  save_interval: 50
+
+  motion_loss_weight: 4.0
+  joint_offset_loss_weight: 1.0
+  joint_pos_loss_weight: 0.02
+  phi_loss_weight: 1.0
+
+EVAL:
+  only_eval: False
+  export_res: False
+
